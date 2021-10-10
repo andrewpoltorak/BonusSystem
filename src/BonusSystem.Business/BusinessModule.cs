@@ -1,4 +1,5 @@
-﻿using BonusSystem.Business.Services;
+﻿using BonusSystem.Business.Mapping;
+using BonusSystem.Business.Services;
 using BonusSystem.Models;
 using BonusSystem.Models.Entities;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ namespace BonusSystem.Business
     {
         public static void RegisterServices(IServiceCollection services, BonusSystemDatabaseSettings settings)
         {
+            GlobalMapping.Configure();
             AddScopedServices(services);
             CreateDBConfiguration(services, settings);
         }
@@ -17,6 +19,8 @@ namespace BonusSystem.Business
         private static void AddScopedServices(IServiceCollection services)
         {
             services.AddScoped<IBonusCardService, BonusCardService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IDebitCreditService, DebitCreditService>();
         }
 
         private static void CreateDBConfiguration(IServiceCollection services, BonusSystemDatabaseSettings settings)
@@ -25,13 +29,12 @@ namespace BonusSystem.Business
 
             AddMongoDbService<BonusCardService, BonusCard>(settings.BonusCardCollection);
             AddMongoDbService<ClientService, Client>(settings.ClientCollection);
-            AddMongoDbService<DebitService, Debit>(settings.DebitCollection);
-            AddMongoDbService<CreditService, Credit>(settings.CreditCollection);
+            AddMongoDbService<DebitCreditService, DebitCredit>(settings.DebitCreditCollection);
 
             void AddMongoDbService<TService, TModel>(string collectionName)
             {
                 services.AddSingleton(db.GetCollection<TModel>(collectionName));
-                services.AddSingleton(typeof(TService));
+                services.AddScoped(typeof(TService));
             }
         }
 

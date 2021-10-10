@@ -4,14 +4,16 @@ using System;
 
 namespace BonusSystem.Models.Entities
 {
-    public class Credit
+    public class DebitCredit
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        public int Number { get; set; }
+        public string CardId { get; set; }
 
-        public DateTime DateStart = DateTime.Now;
+        public decimal Sum = 0;
+
+        public DateTime DateTransact = DateTime.Now;
     }
 }

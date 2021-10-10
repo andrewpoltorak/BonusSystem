@@ -12,9 +12,7 @@ namespace BonusSystem.Models
 
         public string ClientCollection { get; set; }
 
-        public string DebitCollection { get; set; }
-
-        public string CreditCollection { get; set; }
+        public string DebitCreditCollection { get; set; }
 
         public string ConnectionString { get; set; }
 

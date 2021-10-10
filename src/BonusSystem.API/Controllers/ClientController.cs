@@ -4,7 +4,7 @@ namespace BonusSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientController : BaseController
+    public class ClientController : ControllerBase
     {
 
     }

@@ -14,6 +14,6 @@ namespace BonusSystem.Models.Entities
         public string Name { get; set; }
 
         [BsonElement("Telephone")]
-        public string TelNumber { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
