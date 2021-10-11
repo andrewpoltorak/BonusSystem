@@ -31,15 +31,15 @@ namespace BonusSystem.Business.Services
             return debitCreditDocument;
         }
 
-        public Task<decimal> CreateTransactAsync(string cardId, decimal sum)
+        public async Task<decimal> CreateTransactAsync(string cardId, decimal sum)
         {
             var debitCreditDocument = new DebitCredit()
             {
                 CardId = cardId,
                 Sum = sum
             };
-            _debitCreditCollection.InsertOne(debitCreditDocument);
-            return Task.Run(() => _debitCreditCollection.Find(dc => dc.CardId == cardId).ToList().Sum(dc => dc.Sum));
+            await _debitCreditCollection.InsertOneAsync(debitCreditDocument);
+            return _debitCreditCollection.Find(dc => dc.CardId == cardId).ToList().Sum(dc => dc.Sum);
         }
 
         public Task<decimal> GetSumByCardIdAsync(string cardId)

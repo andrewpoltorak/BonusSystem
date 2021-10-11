@@ -38,20 +38,27 @@ namespace BonusSystem.Business.Services
             if (existClient is null)
             {
                 var cardNumber = GetCardNumber();
-                var newBonusCard = new BonusCard()
+                if (cardNumber < 999999)
                 {
-                    Number = cardNumber
-                };
-                _bonusCards.InsertOne(newBonusCard);
-                var client = await CreateClient(requestModel, newBonusCard);
-                DebitCredit bonusSum = await _debitCreditService.CreateDebitCredit(newBonusCard.Id);
-                var bonusCardFullInfo = new BonusCardResponseModel();
-                bonusCardFullInfo = bonusCardFullInfo.ToResponseModel(newBonusCard, bonusSum.Sum, client);
-                return bonusCardFullInfo;
+                    var newBonusCard = new BonusCard()
+                    {
+                        Number = cardNumber
+                    };
+                    _bonusCards.InsertOne(newBonusCard);
+                    var client = await CreateClient(requestModel, newBonusCard);
+                    DebitCredit bonusSum = await _debitCreditService.CreateDebitCredit(newBonusCard.Id);
+                    var bonusCardFullInfo = new BonusCardResponseModel();
+                    bonusCardFullInfo = bonusCardFullInfo.ToResponseModel(newBonusCard, bonusSum.Sum, client);
+                    return bonusCardFullInfo;
+                }
+                else
+                {
+                    throw new InvalidOperationException(message: "Перевищено діапозон доступних номерів для бонусних карт");
+                }                
             }
             else
             {
-                throw new InvalidOperationException(message: "Client with current phone number is already exist");
+                throw new InvalidOperationException(message: "Кліент з таким номером телефону вже існує");
             }
         }
 
