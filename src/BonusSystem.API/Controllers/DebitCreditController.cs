@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BonusSystem.Controllers
 {
-    [Route("api/[controller]/{cardId:string}")]
+    [Route("api/[controller]/{cardId}")]
     [ApiController]
     public class DebitCreditController : ControllerBase
     {
@@ -20,10 +20,10 @@ namespace BonusSystem.Controllers
             _service = service;
         }
 
-        [HttpPatch("sum:int")]
-        public async Task Patch([FromRoute] string cardId, [FromQuery] int sum)
+        [HttpPatch("sum:decimal")]
+        public async Task<decimal> Patch([FromRoute] string cardId, [FromQuery] decimal sum)
         {
-            await _service.CreateTransactAsync(cardId, sum);
+            return await _service.CreateTransactAsync(cardId, sum);
         }
     }
 }

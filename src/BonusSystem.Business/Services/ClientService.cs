@@ -9,7 +9,8 @@ namespace BonusSystem.Business.Services
     public interface IClientService
     {
         Task<Client> GetByPhoneNumberAsync(string searchValue);
-        Task CreateClientAsync(ClientDto clientDto);
+        Task<Client> CreateClientAsync(ClientDto clientDto);
+        Task<Client> GetByCardIdAsync(string cardId);
     }
 
     public class ClientService : IClientService
@@ -21,15 +22,21 @@ namespace BonusSystem.Business.Services
             _clients = clients;
         }
 
-        public Task CreateClientAsync(ClientDto clientDto)
+        public async Task<Client> CreateClientAsync(ClientDto clientDto)
         {
             var client = clientDto.Adapt<Client>();
-            return _clients.InsertOneAsync(client);
+            await _clients.InsertOneAsync(client);
+            return client;
         }
 
         public async Task<Client> GetByPhoneNumberAsync(string searchValue)
         {
             return (await _clients.FindAsync(c => c.PhoneNumber == searchValue)).FirstOrDefault();
+        }
+
+        public async Task<Client> GetByCardIdAsync(string cardId)
+        {
+            return (await _clients.FindAsync(c => c.CardId == cardId)).FirstOrDefault();
         }
     }
 }

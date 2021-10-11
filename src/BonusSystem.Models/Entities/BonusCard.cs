@@ -12,8 +12,8 @@ namespace BonusSystem.Models.Entities
 
         public int Number { get; set; }
 
-        public DateTime DateStart = DateTime.Now;
+        public DateTime DateStart = DateTime.Now.Date;
 
-        public DateTime? DateEnd{ get; set; }
+        public DateTime DateEnd = DateTime.Now.AddYears(1).Date;
     }
 }

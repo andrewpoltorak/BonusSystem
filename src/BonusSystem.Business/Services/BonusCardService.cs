@@ -6,14 +6,15 @@ using System.Linq;
 using BonusSystem.Models.RequestModels;
 using BonusSystem.Models.DTO;
 using Mapster;
-using System.Globalization;
+using BonusSystem.Models.ResponseModels;
+using BonusSystem.Business.Extentions;
 
 namespace BonusSystem.Business.Services
 {
     public interface IBonusCardService
     {
-        Task<BonusCard> GetByValueAsync(string searchValue);
-        Task<BonusCard> CreateCardAsync(CreateClientAndCardRequestModel requestModel);
+        Task<BonusCardResponseModel> GetByValueAsync(string searchValue);
+        Task<BonusCardResponseModel> CreateCardAsync(CreateClientAndCardRequestModel requestModel);
     }
 
     public class BonusCardService : IBonusCardService
@@ -22,50 +23,96 @@ namespace BonusSystem.Business.Services
 
         private readonly IClientService _clientService;
 
-        public BonusCardService(IMongoCollection<BonusCard> bonusCards, IClientService clientService)
+        private readonly IDebitCreditService _debitCreditService;
+
+        public BonusCardService(IMongoCollection<BonusCard> bonusCards, IClientService clientService, IDebitCreditService debitCreditService)
         {
             _bonusCards = bonusCards;
             _clientService = clientService;
+            _debitCreditService = debitCreditService;
         }
 
-        public async Task<BonusCard> CreateCardAsync(CreateClientAndCardRequestModel requestModel)
+        public async Task<BonusCardResponseModel> CreateCardAsync(CreateClientAndCardRequestModel requestModel)
         {
-            var cardNumber = CreateCardNumber();
-            var newBonusCard = new BonusCard()
+            var existClient = await _clientService.GetByPhoneNumberAsync(requestModel.Telephone);
+            if (existClient is null)
             {
-                Number = cardNumber
-            };
-            _bonusCards.InsertOne(newBonusCard);
+                var cardNumber = GetCardNumber();
+                var newBonusCard = new BonusCard()
+                {
+                    Number = cardNumber
+                };
+                _bonusCards.InsertOne(newBonusCard);
+                var client = await CreateClient(requestModel, newBonusCard);
+                DebitCredit bonusSum = await _debitCreditService.CreateDebitCredit(newBonusCard.Id);
+                var bonusCardFullInfo = new BonusCardResponseModel();
+                bonusCardFullInfo = bonusCardFullInfo.ToResponseModel(newBonusCard, bonusSum.Sum, client);
+                return bonusCardFullInfo;
+            }
+            else
+            {
+                throw new InvalidOperationException(message: "Client with current phone number is already exist");
+            }
+        }
+
+        private async Task<Client> CreateClient(CreateClientAndCardRequestModel requestModel, BonusCard newBonusCard)
+        {
             var clientDto = requestModel.Adapt<ClientDto>();
             clientDto.CardId = newBonusCard.Id;
-            await _clientService.CreateClientAsync(clientDto);
-            //TODO: create DebitCredit
-            return newBonusCard;
+            return await _clientService.CreateClientAsync(clientDto);
         }
 
-        private int CreateCardNumber()
+        private int GetCardNumber()
         {
-            var f = _bonusCards.Find(_ => true).ToList().OrderByDescending(bc => bc.Number).Max(m => m.Number) + 1;
-            return 0;
+            var oldNumber = SearchOldCardNumber();
+            if (oldNumber == 0)
+            {
+                var bonusCardsList = _bonusCards.Find(_ => true).ToList();
+                return bonusCardsList.Count > 0 ? bonusCardsList.Select(m => m.Number).OrderByDescending(bc => bc).First() + 1 : 1;
+            }
+            else
+            {
+                _bonusCards.DeleteOne(d => d.Number == oldNumber);
+                return oldNumber;
+            }
         }
 
-        public async Task<BonusCard> GetByValueAsync(string searchValue)
+        private int SearchOldCardNumber()
         {
-            //if searchValue is a bonus card number 
+            var builder = Builders<BonusCard>.Filter;
+            var filter = builder.Lt("DateEnd", DateTime.Now.Date);
+            var oldBonusCard = _bonusCards.Find(filter).ToList().OrderBy(f => f.DateEnd).FirstOrDefault();
+            return oldBonusCard != null ? oldBonusCard.Number : 0;
+        }
+
+        public async Task<BonusCardResponseModel> GetByValueAsync(string searchValue)
+        {
+            var bonusCardFullInfo = new BonusCardResponseModel();
+
+            //if searchValue is a phone number
             if (searchValue.Length > 6)
             {
                 var client = await _clientService.GetByPhoneNumberAsync(searchValue);
                 if (client is not null)
                 {
-                    return (await _bonusCards.FindAsync(bc => bc.Id == client.CardId)).FirstOrDefault();
+                    var bonusCard = (await _bonusCards.FindAsync(bc => bc.Id == client.CardId)).FirstOrDefault();
+                    var bonusSum = await _debitCreditService.GetSumByCardIdAsync(bonusCard.Id);
+                    bonusCardFullInfo = bonusCardFullInfo.ToResponseModel(bonusCard, bonusSum, client);
                 }
-                return null;
             }
-            //if searchValue is a phone number
+            //if searchValue is a bonus card number 
             else
             {
-                return (await _bonusCards.FindAsync(bc => bc.Number == Convert.ToInt32(searchValue))).FirstOrDefault();
+                var bonusCard = (await _bonusCards.FindAsync(bc => bc.Number == Convert.ToInt32(searchValue))).FirstOrDefault();
+                if (bonusCard is not null)
+                {
+                    var client = await _clientService.GetByCardIdAsync(bonusCard.Id);
+                    var bonusSum = await _debitCreditService.GetSumByCardIdAsync(bonusCard.Id);
+                    bonusCardFullInfo = bonusCardFullInfo.ToResponseModel(bonusCard, bonusSum, client);
+                }
             }
+
+            return bonusCardFullInfo;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using BonusSystem.Business.Services;
-using BonusSystem.Models.Entities;
 using BonusSystem.Models.RequestModels;
+using BonusSystem.Models.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,18 +18,18 @@ namespace BonusSystem.Controllers
         }
 
         [HttpGet("{searchValue}")]
-        public async Task<BonusCard> Get(string searchValue)
+        public async Task<BonusCardResponseModel> Get(string searchValue)
         {
-            BonusCard bonusCard = null;
+            BonusCardResponseModel response = null;
             if (!string.IsNullOrEmpty(searchValue))
             {
-                bonusCard = await _service.GetByValueAsync(searchValue);
+                response = await _service.GetByValueAsync(searchValue);
             }
-            return bonusCard;
+            return response;
         }
 
         [HttpPost]
-        public async Task<BonusCard> Post([FromBody] CreateClientAndCardRequestModel requestModel)
+        public async Task<BonusCardResponseModel> Post([FromBody] CreateClientAndCardRequestModel requestModel)
         {
             if (!string.IsNullOrEmpty(requestModel.Name) && !string.IsNullOrEmpty(requestModel.Telephone))
             {
