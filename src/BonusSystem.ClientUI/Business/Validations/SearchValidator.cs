@@ -14,12 +14,12 @@
                 }
                 if (!int.TryParse(searchValue, out _))
                 {
-                    validationMassage = "Пошукові параметри мають бути числом";
+                    validationMassage = "Пошукові параметри мають бути цілим числом";
                     break;
                 }
                 if (isPhoneNumber)
                 {
-                    if (!searchValue.StartsWith("0") || searchValue.Length > 10)
+                    if (!searchValue.StartsWith("0") || searchValue.Length != 10)
                     {
                         validationMassage = "Номер телефону має бути у форматі 0NNNNNNNNN";
                     }

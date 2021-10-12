@@ -1,10 +1,5 @@
 ﻿using BonusSystem.Business.Services;
-using BonusSystem.Models.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BonusSystem.Controllers
@@ -20,8 +15,8 @@ namespace BonusSystem.Controllers
             _service = service;
         }
 
-        [HttpPatch("sum:decimal")]
-        public async Task<decimal> Patch([FromRoute] string cardId, [FromQuery] decimal sum)
+        [HttpPatch("{sum}")]
+        public async Task<decimal> Patch([FromRoute] string cardId, string sum)
         {
             return await _service.CreateTransactAsync(cardId, sum);
         }

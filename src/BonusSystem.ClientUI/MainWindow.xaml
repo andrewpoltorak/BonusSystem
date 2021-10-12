@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:BonusSystem.ClientUI"
         mc:Ignorable="d"
         Title="Бонусна система" Height="450" Width="859" WindowStartupLocation="CenterScreen" Background="#FF1E1E1E" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" Loaded="BonusSystemWindow_Loaded">
-    <TabControl Margin="0,0,0,7">
-        <TabItem Header="Інформація" IsSelected="True" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+    <TabControl x:Name="TabControlMain" Margin="0,0,0,7" SelectionChanged="TabControlMain_SelectionChanged">
+        <TabItem x:Name="TabItemInfo" Header="Інформація" IsSelected="True" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
             <Grid Background="#FF2E2D2D" Margin="0,0,2,0" Height="393">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -21,30 +21,30 @@
                 <Label x:Name="LabelName" Content="" HorizontalAlignment="Left" Margin="24,167,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="368"/>
                 <TextBlock x:Name="TextBlockTel" HorizontalAlignment="Left" Margin="20,221,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Height="21" Width="82"><Run Language="uk-ua" Text="Телефон"/></TextBlock>
                 <Label x:Name="LabelTel" Content="" HorizontalAlignment="Left" Margin="24,247,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="368"/>
-                <TextBlock x:Name="TextBlockCard" HorizontalAlignment="Left" Margin="19,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Height="21" Width="103"><Run Language="uk-ua" Text="Номер картки"/></TextBlock>
+                <TextBlock x:Name="TextBlockCard" HorizontalAlignment="Left" Margin="19,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Height="21" Width="135"><Run Language="uk-ua" Text="Номер картки"/></TextBlock>
                 <Label x:Name="LabelCard" Content="" HorizontalAlignment="Left" Margin="24,331,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="368"/>
                 <TextBlock x:Name="TextBlockDateStart" HorizontalAlignment="Left" Margin="456,141,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Text="Дата початку дії картки" Height="21" Width="171"/>
                 <Label x:Name="LabelName_Copy2" Content="" HorizontalAlignment="Left" Margin="456,169,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="10"/>
                 <TextBlock x:Name="TextBlockDateEnd" HorizontalAlignment="Left" Margin="456,220,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Text="Дата закінчення дії картки" Height="21" Width="202"/>
                 <GroupBox x:Name="GroupBoxBalance" Header="Поточний баланс" Margin="456,16,0,0" Foreground="#FFFDF9F9" HorizontalAlignment="Left" Width="375" Height="107" VerticalAlignment="Top"/>
-                <TextBox x:Name="TextBoxTransact" HorizontalAlignment="Left" Margin="483,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Background="White" TextAlignment="Right" Text="Внести/списати* кошти" Height="18"/>
-                <Button x:Name="ButtonTransact" Content="OK" HorizontalAlignment="Left" Margin="762,70,0,0" VerticalAlignment="Top" Width="38" Height="20"/>
+                <TextBox x:Name="TextBoxTransact" HorizontalAlignment="Left" Margin="483,70,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Background="White" TextAlignment="Right" Height="18"/>
+                <Button x:Name="ButtonTransact" Content="OK" HorizontalAlignment="Left" Margin="762,70,0,0" VerticalAlignment="Top" Width="38" Height="20" Click="ButtonTransact_Click"/>
                 <TextBlock x:Name="TextBlockSum" HorizontalAlignment="Left" Margin="484,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16" Text="Сума:" Height="21" Width="40"/>
                 <Label x:Name="LabelSum" Content="" HorizontalAlignment="Left" Margin="533,32,0,0" VerticalAlignment="Top" FontSize="16" Foreground="#FFD4FC08" Height="31" Width="284"/>
-                <TextBlock x:Name="TextBlockInfo" HorizontalAlignment="Left" Margin="478,98,0,0" Text="*для списання поставте знак мінус перед числом без пробілу" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FFFCF9F9" Width="359" Height="16"/>
+                <TextBlock x:Name="TextBlockInfo" HorizontalAlignment="Left" Margin="474,97,0,0" Text="*для списання поставте знак мінус перед числом без пробілу" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FFFCF9F9" Width="359" Height="16"/>
                 <Label x:Name="LabelDateStart" Content="" HorizontalAlignment="Left" Margin="460,167,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="371"/>
                 <Label x:Name="LabelDateEnd" Content="" HorizontalAlignment="Left" Margin="460,247,0,0" VerticalAlignment="Top" FontSize="14" Foreground="#FFF9F7F7" Height="29" Width="371"/>
-                <TextBlock x:Name="TextBlockErrorSearch" HorizontalAlignment="Left" Height="88" Margin="456,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="385" Foreground="#FFFA0606"/>
+                <TextBlock x:Name="TextBlockErrorInfo" HorizontalAlignment="Left" Height="88" Margin="456,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="375" Foreground="#FFFA0606"/>
             </Grid>
         </TabItem>
-        <TabItem Header="Створення картки" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+        <TabItem x:Name="TabItemCreate" Header="Створення картки" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
             <Grid Background="#FF2E2D2D">
                 <TextBlock x:Name="TextBlockInputName" HorizontalAlignment="Left" Margin="20,20,0,0" Text="Введіть ПІБ клієнта" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16"/>
-                <TextBox x:Name="TextBoxInputName" HorizontalAlignment="Left" Margin="18,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Background="White" TextAlignment="Right"/>
-                <TextBlock x:Name="TextBlockInputTel" HorizontalAlignment="Left" Margin="20,104,0,0" Text="Введіть номер телефону клієнта" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16"/>
+                <TextBox x:Name="TextBoxInputName" HorizontalAlignment="Left" Margin="18,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="438" Background="White" TextAlignment="Right"/>
+                <TextBlock x:Name="TextBlockInputTel" HorizontalAlignment="Left" Margin="20,104,0,0" Text="Введіть номер телефону клієнта (формат - 0NNNNNNNNN)" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF4E9AEB" FontSize="16"/>
                 <TextBox x:Name="TextBoxInputTel" HorizontalAlignment="Left" Margin="18,145,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Background="White" TextAlignment="Right"/>
-                <Button x:Name="ButtonSave" Content="Зберегти" HorizontalAlignment="Left" Margin="20,200,0,0" VerticalAlignment="Top" Width="69"/>
-                <TextBlock x:Name="TextBlockErrorCreate" HorizontalAlignment="Left" Height="88" Margin="456,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="385" Foreground="#FFFA0606"/>
+                <Button x:Name="ButtonSave" Content="Зберегти" HorizontalAlignment="Left" Margin="20,200,0,0" VerticalAlignment="Top" Width="69" Click="ButtonSave_Click"/>
+                <TextBlock x:Name="TextBlockErrorCreate" HorizontalAlignment="Left" Height="88" Margin="20,295,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="455" Foreground="#FFFA0606"/>
             </Grid>
         </TabItem>
     </TabControl>
