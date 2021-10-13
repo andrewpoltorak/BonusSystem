@@ -222,7 +222,7 @@ namespace BonusSystem.ClientUI
             {
                 ClearAllFieldsOnCreateTab();
             }
-            if (TabItemInfo is not null && TabItemInfo.IsSelected)
+            if (TabItemInfo is not null && TabItemInfo.IsSelected && TextBlockErrorInfo is not null)
             {
                 TextBlockErrorInfo.Text = "";
             }
