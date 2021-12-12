@@ -37,7 +37,7 @@ namespace BonusSystem.Business.Services
             var existClient = await _clientService.GetByPhoneNumberAsync(requestModel.Telephone);
             if (existClient is null)
             {
-                var cardNumber = GetCardNumber();
+                var cardNumber = await GetCardNumberAsync();
                 if (cardNumber < 999999)
                 {
                     var newBonusCard = new BonusCard()
@@ -69,9 +69,9 @@ namespace BonusSystem.Business.Services
             return await _clientService.CreateClientAsync(clientDto);
         }
 
-        private int GetCardNumber()
+        private async Task<int> GetCardNumberAsync()
         {
-            var oldNumber = SearchOldCardNumber();
+            var oldNumber = await SearchOldCardNumberAsync();
             if (oldNumber == 0)
             {
                 var bonusCardsList = _bonusCards.Find(_ => true).ToList();
@@ -79,16 +79,16 @@ namespace BonusSystem.Business.Services
             }
             else
             {
-                _bonusCards.DeleteOne(d => d.Number == oldNumber);
+                await _bonusCards.DeleteOneAsync(d => d.Number == oldNumber);
                 return oldNumber;
             }
         }
 
-        private int SearchOldCardNumber()
+        private async Task<int> SearchOldCardNumberAsync()
         {
             var builder = Builders<BonusCard>.Filter;
             var filter = builder.Lt("DateEnd", DateTime.Now.Date);
-            var oldBonusCard = _bonusCards.Find(filter).ToList().OrderBy(f => f.DateEnd).FirstOrDefault();
+            var oldBonusCard = (await _bonusCards.Find(filter).ToListAsync()).OrderBy(f => f.DateEnd).FirstOrDefault();
             return oldBonusCard != null ? oldBonusCard.Number : 0;
         }
 

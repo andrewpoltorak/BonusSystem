@@ -44,7 +44,7 @@ namespace BonusSystem.Business.Services
                 Sum = valueValue
             };
             await _debitCreditCollection.InsertOneAsync(debitCreditDocument);
-            return _debitCreditCollection.Find(dc => dc.CardId == cardId).ToList().Sum(dc => dc.Sum);
+            return (await _debitCreditCollection.Find(dc => dc.CardId == cardId).ToListAsync()).Sum(dc => dc.Sum);
         }
 
         private decimal CreateValidValue(string sum, bool isNegative)
@@ -54,9 +54,9 @@ namespace BonusSystem.Business.Services
                 decimal.Parse(sum, CultureInfo.InvariantCulture);
         }
 
-        public Task<decimal> GetSumByCardIdAsync(string cardId)
+        public async Task<decimal> GetSumByCardIdAsync(string cardId)
         {
-            return Task.Run(() => _debitCreditCollection.Find(dc => dc.CardId == cardId).ToList().Sum(dc => dc.Sum));
+            return (await _debitCreditCollection.Find(dc => dc.CardId == cardId).ToListAsync()).Sum(dc => dc.Sum);
         }
     }
 }
