@@ -4,34 +4,26 @@
     {
         public static string ValidationSearchValue(string searchValue, bool isPhoneNumber)
         {
-            string validationMassage = string.Empty;
-            do
+            if (string.IsNullOrEmpty(searchValue))
             {
-                if (string.IsNullOrEmpty(searchValue))
+                return "Пошукові параметри не можуть бути пустими";
+            }
+            if (!int.TryParse(searchValue, out _))
+            {
+                return "Пошукові параметри мають бути цілим числом";
+            }
+            if (isPhoneNumber)
+            {
+                if (!searchValue.StartsWith("0") || searchValue.Length != 10)
                 {
-                    validationMassage = "Пошукові параметри не можуть бути пустими";
-                    break;
+                    return "Номер телефону має бути у форматі 0NNNNNNNNN";
                 }
-                if (!int.TryParse(searchValue, out _))
-                {
-                    validationMassage = "Пошукові параметри мають бути цілим числом";
-                    break;
-                }
-                if (isPhoneNumber)
-                {
-                    if (!searchValue.StartsWith("0") || searchValue.Length != 10)
-                    {
-                        validationMassage = "Номер телефону має бути у форматі 0NNNNNNNNN";
-                    }
-                    break;
-                }
-                else if(searchValue.Length > 6)
-                {
-                    validationMassage = "Номер картки не має перевищувати 6 символів";
-                    break;
-                }
-            } while (false);
-            return validationMassage;
+            }
+            else if (searchValue.Length > 6)
+            {
+                return "Номер картки не має перевищувати 6 символів";
+            }
+            return string.Empty;
         }
     }
 }

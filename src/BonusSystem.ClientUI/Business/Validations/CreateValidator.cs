@@ -10,27 +10,19 @@ namespace BonusSystem.ClientUI.Business.Validations
     {
         public static string ValidationCreateValues(string name, string phoneNumber)
         {
-            string validationMassage = string.Empty;
-            do
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(phoneNumber))
             {
-                if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(phoneNumber))
-                {
-                    validationMassage = "Заповніть усі поля!";
-                    break;
-                }
-                if (!int.TryParse(phoneNumber, out _))
-                {
-                    validationMassage = "Номер телефону має бути цілим числом";
-                    break;
-                }
-                if (!phoneNumber.StartsWith("0") || phoneNumber.Length != 10 )
-                {
-                    validationMassage = "Номер телефону має бути у форматі 0NNNNNNNNN";
-                    break;
-                }
-
-            } while (false);
-            return validationMassage;
+                return "Заповніть усі поля!";
+            }
+            if (!int.TryParse(phoneNumber, out _))
+            {
+                return "Номер телефону має бути цілим числом";
+            }
+            if (!phoneNumber.StartsWith("0") || phoneNumber.Length != 10)
+            {
+                return "Номер телефону має бути у форматі 0NNNNNNNNN";
+            }
+            return string.Empty;
         }
     }
 }
